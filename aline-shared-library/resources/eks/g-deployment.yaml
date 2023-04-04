@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${SERVICE}-microservice-deployment
+  namespace: aline
+  labels:
+    component: ${SERVICE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: ${SERVICE}
+  template:
+    metadata:
+      labels:
+        component: ${SERVICE}
+    spec:
+      containers:
+      - name: ${SERVICE}
+        image: ${AWS_ACCOUNT_NUMBER}.dkr.ecr.${AWS_REGION}.amazonaws.com/sm-${SERVICE}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 80
+        env:
+        - name: APP_PORT
+          value: "80"
+        - name: APP_SERVICE_HOST
+          value: back-end-service
+        - name: PORTAL_LANDING
+          value: landing-service
+        - name: PORTAL_DASHBOARD
+          value: dashboard-service
+        - name: PORTAL_ADMIN
+          value: admin-service
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "700m"

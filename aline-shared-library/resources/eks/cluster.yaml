@@ -1,0 +1,35 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: ${CLUSTER_NAME}
+  region: ${AWS_REGION}
+  version: ${K8S_VERSION}
+
+vpc:
+  id: ${VPC_ID}
+  securityGroup: ${SECURITY_GROUP_ID}
+  subnets:
+    private:
+      ${AZ_1}: { id: ${SUBNET_PRIVATE_AZ1_ID} }
+      ${AZ_2}: { id: ${SUBNET_PRIVATE_AZ2_ID} }
+    public:
+      ${AZ_1}: { id: ${SUBNET_PUBLIC_AZ1_ID} }
+      ${AZ_2}: { id: ${SUBNET_PUBLIC_AZ2_ID} }
+
+managedNodeGroups:
+  - name: ${NODEGROUP_NAME}
+    instanceType: ${INSTANCE_TYPE}
+    desiredCapacity: ${DESIRED_CAPACITY}
+    volumeSize: ${VOLUME_SIZE}
+    iam:
+      instanceRoleARN: ${NODEGROUP_INSTANCE_ROLE_ARN}
+
+addons:
+- name: vpc-cni # no version is specified so it deploys the default version
+  attachPolicyARNs:
+    - arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy
+- name: coredns
+  version: latest # auto discovers the latest available
+- name: kube-proxy
+  version: latest

@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${SERVICE}-microservice-deployment
+  namespace: aline
+  labels:
+    component: deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: deployment
+  template:
+    metadata:
+      labels:
+        component: deployment
+    spec:
+      containers:
+      - name: ${SERVICE}
+        image: ${AWS_ACCOUNT_NUMBER}.dkr.ecr.${AWS_REGION}.amazonaws.com/sm-${SERVICE}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: ${APP_PORT}
+        env:
+        - name: APP_PORT
+          value: "${APP_PORT}"
+        - name: DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: db-username
+              key: DB_USERNAME
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-password
+              key: DB_PASSWORD
+        - name: DB_HOST
+          valueFrom:
+            secretKeyRef:
+              name: db-host
+              key: DB_HOST
+        - name: DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: db-port
+              key: DB_PORT
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: db-name
+              key: DB_NAME
+        - name: ENCRYPT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: encrypt-key
+              key: ENCRYPT_SECRET_KEY
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: jwt-key
+              key: JWT_SECRET_KEY
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "700m"

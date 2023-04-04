@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ${SERVICE}-microservice-deployment
+  namespace: aline
+  labels:
+    component: ${SERVICE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: ${SERVICE}
+  template:
+    metadata:
+      labels:
+        component: ${SERVICE}
+    spec:
+      containers:
+      - name: ${SERVICE}
+        image: ${AWS_ACCOUNT_NUMBER}.dkr.ecr.${AWS_REGION}.amazonaws.com/sm-${SERVICE}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: http
+          containerPort: 80
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "250m"
